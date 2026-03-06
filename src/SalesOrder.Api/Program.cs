@@ -11,7 +11,7 @@ builder.Logging.AddSimpleConsole(options =>
     options.IncludeScopes = true;
 });
 
-// MVC + comportamento custom (sem duplicar)
+// MVC + comportamento custom
 builder.Services.AddControllers();
 builder.Services.AddCustomApiBehavior();
 
@@ -30,7 +30,7 @@ var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não foi configurada.");
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<SalesOrderDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddHealthChecks()
@@ -48,13 +48,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// ✅ Correlation primeiro (para todo log/erro ter TraceId)
 app.UseMiddleware<RequestCorrelationMiddleware>();
 
-// ✅ Exception handler cedo (já com TraceId disponível)
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// ✅ Request logging
 app.Use(async (ctx, next) =>
 {
     var logger = ctx.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("Request");
@@ -63,13 +60,17 @@ app.Use(async (ctx, next) =>
     logger.LogInformation("HTTP {Method} {Path} TraceId={TraceId}",
         ctx.Request.Method, ctx.Request.Path, traceId);
 
-    await next();
-
-    logger.LogInformation("HTTP {StatusCode} {Method} {Path} TraceId={TraceId}",
-        ctx.Response.StatusCode, ctx.Request.Method, ctx.Request.Path, traceId);
+    try
+    {
+        await next();
+    }
+    finally
+    {
+        logger.LogInformation("HTTP {StatusCode} {Method} {Path} TraceId={TraceId}",
+            ctx.Response.StatusCode, ctx.Request.Method, ctx.Request.Path, traceId);
+    }
 });
 
-app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();
