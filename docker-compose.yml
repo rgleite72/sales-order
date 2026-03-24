@@ -24,7 +24,6 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ConnectionStrings__DefaultConnection: ${CONNECTION_STRING}
-
     ports:
       - "${API_PORT}:8080"
     depends_on:

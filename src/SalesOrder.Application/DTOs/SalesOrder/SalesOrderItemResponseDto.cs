@@ -13,4 +13,6 @@ public class SalesOrderItemResponseDto
 
     public decimal TotalPrice {get; set;}   
 
+
+
 }

@@ -2,6 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using SalesOrder.Api.Extensions;
 using SalesOrder.Api.Middlewares;
 using SalesOrder.Infrastructure.Persistence;
+using SalesOrder.Application.Contracts.Integration;
+using SalesOrder.Infrastructure.Integrations.ProductCatalog;
+using SalesOrder.Application.Contracts;
+using SalesOrder.Application.Services.Orders;
+using SalesOrder.Application.Contracts.Persistence;
+using SalesOrder.Application.Contracts.Documents;
+using SalesOrder.Infrastructure.Documents;
+using Azure.Storage.Blobs;
+using SalesOrder.Application.Contracts.Storage;
+using SalesOrder.Infrastructure.Storage;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +46,36 @@ builder.Services.AddDbContext<SalesOrderDbContext>(options =>
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString);
+
+
+builder.Services.AddSingleton(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetConnectionString("AzureBlobStorage")
+        ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' não foi configurada.");
+
+    return new BlobServiceClient(connectionString);
+});
+
+
+builder.Services.AddHttpClient<IProductCatalogGateway, ProductCatalogGateway>((sp, client) =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var baseUrl = configuration["IntegrationSettings:ProductCatalogBaseUrl"];
+
+    client.BaseAddress = new Uri(baseUrl!);
+});
+
+
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
+builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+
+//Gerador do PDF
+builder.Services.AddScoped<IOrderPdfGenerator, OrderPdfGenerator>();
+//Envia arquivo para Blob
+builder.Services.AddScoped<IOrderDocumentStorageService, OrderDocumentStorageService>();
+
 
 var app = builder.Build();
 

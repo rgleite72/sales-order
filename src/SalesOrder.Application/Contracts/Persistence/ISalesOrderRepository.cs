@@ -1,5 +1,7 @@
 using SalesOrder.Domain.Orders.Entities;
 
+namespace SalesOrder.Application.Contracts.Persistence;
+
 public interface ISalesOrderRepository
 {
     Task AddAsync(Order order, CancellationToken ct = default);
