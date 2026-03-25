@@ -2,27 +2,59 @@ trigger:
   branches:
     include:
       - main
+      - develop
+      - feature/*
 
 pr:
   branches:
     include:
       - main
+      - develop
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
+  solution: 'SalesOrder.sln'
 
 steps:
   - task: UseDotNet@2
-    displayName: 'Use .NET SDK'
+    displayName: 'Install .NET SDK 8'
     inputs:
       packageType: 'sdk'
-      version: '8.x'
+      version: '8.0.x'
 
-  - script: dotnet restore SalesOrder.sln
+  - script: dotnet restore $(solution)
     displayName: 'Restore'
 
-  - script: dotnet build SalesOrder.sln --configuration $(buildConfiguration) --no-restore
+  - script: dotnet build $(solution) --configuration $(buildConfiguration) --no-restore
     displayName: 'Build'
+
+  - script: dotnet test $(solution) --configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage" --logger trx
+    displayName: 'Run tests'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish test results'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: '**/*.trx'
+      failTaskOnFailedTests: true
+
+  - task: PublishCodeCoverageResults@2
+    displayName: 'Publish code coverage'
+    condition: succeededOrFailed()
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+
+  - script: dotnet publish src/SalesOrder.Api/SalesOrder.Api.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/publish
+    displayName: 'Publish API'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)/publish'
+      ArtifactName: 'salesorder-api'
+      publishLocation: 'Container'
