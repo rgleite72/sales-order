@@ -94,10 +94,14 @@ Method   Endpoint                   Description
 
 \---
 
-POST     /api/orders                Create order     
+POST     /api/orders                Create order    
+
 GET      /api/orders/{id}           Get order by ID
+
 GET      /api/orders                List orders
+
 POST     /api/orders/{id}/confirm   Confirm order
+
 POST     /api/orders/{id}/cancel    Cancel order
 
 \---
