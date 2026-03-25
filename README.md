@@ -4,7 +4,7 @@ API for sales order management built with modern backend practices.
 
 \---
 
-## 🚀 Tech Stack
+## Tech Stack
 
 * .NET 8
 * ASP.NET Core Web API
@@ -15,7 +15,7 @@ API for sales order management built with modern backend practices.
 
 \---
 
-## 📌 Overview
+## Overview
 
 The SalesOrder API is responsible for managing sales orders, including:
 
@@ -29,7 +29,7 @@ architecture and production-ready practices.
 
 \---
 
-## 🧱 Architecture
+## Architecture
 
 The solution follows a layered architecture:
 
@@ -58,7 +58,7 @@ The solution follows a layered architecture:
 
 \---
 
-## 📂 Project Structure
+## Project Structure
 
 &#x20;   src/
     ├── SalesOrder.Api
@@ -73,7 +73,7 @@ The solution follows a layered architecture:
 
 \---
 
-## ⚙️ Main Features
+## Main Features
 
 * Create sales orders
 * List orders with pagination
@@ -98,7 +98,7 @@ POST     /api/orders/{id}/cancel    Cancel order
 
 \---
 
-## 📦 Running Locally
+## Running Locally
 
 ``` bash
 git clone https://github.com/rgleite72/sales-order.git
@@ -116,7 +116,7 @@ http://localhost:5000/swagger
 
 \---
 
-## 🐳 Docker
+## Docker
 
 Docker Compose is used to provision:
 
@@ -124,7 +124,7 @@ Docker Compose is used to provision:
 
 \---
 
-## 🔄 Continuous Integration
+## Continuous Integration
 
 This project uses Azure DevOps Pipelines.
 
@@ -136,7 +136,7 @@ Pipeline executes:
 
 \---
 
-## 🧪 Tests
+## Tests
 
 The project includes:
 
@@ -147,7 +147,7 @@ Executed automatically via pipeline.
 
 \---
 
-## 📊 Project Status
+## Project Status
 
 Version: V1
 
