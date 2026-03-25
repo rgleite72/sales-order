@@ -124,3 +124,4 @@ Current version:
 
 V1 - Sales Order core + Docker + Initial CI
 
+## teste pipeline
