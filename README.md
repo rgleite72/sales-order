@@ -1,127 +1,117 @@
-# SalesOrder API
+SalesOrder API
+API for sales order management built with modern backend practices.
+---
 
-API for sales order management built with:
+🚀 Tech Stack
+.NET 8
+ASP.NET Core Web API
+PostgreSQL
+Entity Framework Core
+Docker
+Azure DevOps (CI)
+---
 
-* .NET 8
-* ASP.NET Core
-* PostgreSQL
-* Entity Framework Core
-* Docker
-* Azure DevOps Pipelines (CI - restore/build)
+📌 Overview
+The SalesOrder API is responsible for managing sales orders, including:
+Order creation
+Order listing
+Order details retrieval
+Order status management (confirm/cancel)
+This project simulates a real-world backend service using clean
+architecture and production-ready practices.
+---
 
-
-## Overview
-
-
-
-
-## Architecture
-
+🧱 Architecture
 The solution follows a layered architecture:
+Domain
+Core business entities
+Business rules
+Application
+DTOs
+Service interfaces
+Business use cases
+Infrastructure
+EF Core configuration
+Repository implementations
+Database access
+API
+Controllers
+Dependency Injection
+HTTP endpoints
+---
 
-### Domain
+📂 Project Structure
+    src/
+    ├── SalesOrder.Api
+    ├── SalesOrder.Application
+    ├── SalesOrder.Domain
+    ├── SalesOrder.Infrastructure
 
-* Entities
-* Business rules
+    tests/
+    ├── SalesOrder.IntegrationTests
+    ├── SalesOrder.UnitTests
 
-### Application
+---
 
-* DTOs
-* Service contracts
-* Application services
+⚙️ Main Features
+Create sales orders
+List orders with pagination
+Get order details
+Confirm order
+Cancel order
+Integration-ready architecture (ProductCatalog)
+---
 
-### Infrastructure
+🔌 Main Endpoints
+Method   Endpoint                   Description
+---
+POST     /api/orders                Create order
+GET      /api/orders/{id}           Get order by ID
+GET      /api/orders                List orders
+POST     /api/orders/{id}/confirm   Confirm order
+POST     /api/orders/{id}/cancel    Cancel order
+---
 
-* EF Core persistence
-* Repository implementations
-* Database configuration
-
-### API
-
-* Controllers
-* Dependency Injection
-* HTTP endpoints
-
-
-## Project Structure
-
-src/
-
- ├── SalesOrder.Api
-
- ├── SalesOrder.Application
-
- ├── SalesOrder.Domain
-
- ├── SalesOrder.Infrastructure
-
-
-## Main Features
-
-
-## Main Endpoints
-
-
-
-
-
-
-## Running Locally
-
-### 1. Clone repository
-
-
-
-
-### 2. Start infrastructure
+📦 Running Locally
+``` bash
+git clone https://github.com/rgleite72/sales-order.git
+cd sales-order
 
 docker compose up -d
 
-
-### 3. Apply migrations
-
 dotnet ef database update --project src/SalesOrder.Infrastructure --startup-project src/SalesOrder.Api
-
-
-### 4. Run application
 
 dotnet run --project src/SalesOrder.Api
 
+# Swagger:
+http://localhost:5000/swagger
+```
+---
 
+🐳 Docker
+Docker Compose is used to provision:
+PostgreSQL database
+---
 
-## Docker
-
-The project uses Docker Compose to provision PostgreSQL locally.
-
-Main service:
-
-* PostgreSQL database
-
-
-## Continuous Integration
-
-This project uses Azure DevOps Pipelines for Continuous Integration.
-
+🔄 Continuous Integration
+This project uses Azure DevOps Pipelines.
 Pipeline executes:
+Restore dependencies
+Build solution
+Run tests
+---
 
-* Restore dependencies
-* Build solution
+🧪 Tests
+The project includes:
+Unit tests
+Integration tests
+Executed automatically via pipeline.
+---
 
-
-## Technology Stack
-
-* .NET 8
-* ASP.NET Core Web API
-* Entity Framework Core
-* PostgreSQL
-* Docker
-* Azure DevOps
-
-
-## Status
-
-Current version:
-
-V1 - Sales Order core + Docker + Initial CI
-
-## teste pipeline
+📊 Project Status
+Version: V1
+Core SalesOrder API
+Docker environment
+CI pipeline with Azure DevOps
+PR validation with build checks
+---
