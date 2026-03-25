@@ -61,10 +61,10 @@ The solution follows a layered architecture:
 ## 📂 Project Structure
 
 &#x20;   src/
-    ├── SalesOrder.Api
-    ├── SalesOrder.Application
-    ├── SalesOrder.Domain
-    ├── SalesOrder.Infrastructure
+    ├── SalesOrder.Api    
+    ├── SalesOrder.Application 
+    ├── SalesOrder.Domain 
+    ├── SalesOrder.Infrastructure 
 
     tests/
     ├── SalesOrder.IntegrationTests
@@ -90,7 +90,7 @@ Method   Endpoint                   Description
 
 \---
 
-POST     /api/orders                Create order
+POST     /api/orders                Create order     
 GET      /api/orders/{id}           Get order by ID
 GET      /api/orders                List orders
 POST     /api/orders/{id}/confirm   Confirm order
