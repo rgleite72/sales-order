@@ -13,8 +13,9 @@ using Azure.Storage.Blobs;
 using SalesOrder.Application.Contracts.Storage;
 using SalesOrder.Infrastructure.Storage;
 
-
 var builder = WebApplication.CreateBuilder(args);
+
+var isTesting = builder.Environment.IsEnvironment("Testing");
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSimpleConsole(options =>
@@ -22,7 +23,6 @@ builder.Logging.AddSimpleConsole(options =>
     options.IncludeScopes = true;
 });
 
-// MVC + comportamento custom
 builder.Services.AddControllers();
 builder.Services.AddCustomApiBehavior();
 
@@ -37,26 +37,36 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' não foi configurada.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<SalesOrderDbContext>(options =>
-    options.UseNpgsql(connectionString));
-
-builder.Services.AddHealthChecks()
-    .AddNpgSql(connectionString);
-
-
-builder.Services.AddSingleton(sp =>
+if (!isTesting)
 {
-    var configuration = sp.GetRequiredService<IConfiguration>();
-    var connectionString = configuration.GetConnectionString("AzureBlobStorage")
-        ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' não foi configurada.");
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("Connection string 'DefaultConnection' não foi configurada.");
+    }
 
-    return new BlobServiceClient(connectionString);
-});
+    builder.Services.AddDbContext<SalesOrderDbContext>(options =>
+        options.UseNpgsql(connectionString));
 
+    builder.Services.AddHealthChecks()
+        .AddNpgSql(connectionString);
+
+    builder.Services.AddSingleton(sp =>
+    {
+        var configuration = sp.GetRequiredService<IConfiguration>();
+        var blobConnectionString = configuration.GetConnectionString("AzureBlobStorage")
+            ?? throw new InvalidOperationException("Connection string 'AzureBlobStorage' não foi configurada.");
+
+        return new BlobServiceClient(blobConnectionString);
+    });
+
+    builder.Services.AddScoped<IOrderDocumentStorageService, OrderDocumentStorageService>();
+}
+else
+{
+    builder.Services.AddHealthChecks();
+}
 
 builder.Services.AddHttpClient<IProductCatalogGateway, ProductCatalogGateway>((sp, client) =>
 {
@@ -66,16 +76,10 @@ builder.Services.AddHttpClient<IProductCatalogGateway, ProductCatalogGateway>((s
     client.BaseAddress = new Uri(baseUrl!);
 });
 
-
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
 builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
-
-//Gerador do PDF
 builder.Services.AddScoped<IOrderPdfGenerator, OrderPdfGenerator>();
-//Envia arquivo para Blob
-builder.Services.AddScoped<IOrderDocumentStorageService, OrderDocumentStorageService>();
-
 
 var app = builder.Build();
 
@@ -90,7 +94,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<RequestCorrelationMiddleware>();
-
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Use(async (ctx, next) =>
@@ -118,3 +121,4 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
+public partial class Program { }
