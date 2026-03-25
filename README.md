@@ -61,9 +61,13 @@ The solution follows a layered architecture:
 ## 📂 Project Structure
 
 &#x20;   src/
-    ├── SalesOrder.Api    
+
+    ├── SalesOrder.Api 
+
     ├── SalesOrder.Application 
+
     ├── SalesOrder.Domain 
+
     ├── SalesOrder.Infrastructure 
 
     tests/
